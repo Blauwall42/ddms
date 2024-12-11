@@ -4,8 +4,7 @@ import numpy as np
 
 # Define the vaccine subtargeting
 def vaccinate_by_age(sim):
-    young = cv.true(
-        sim.people.age < 50)  # cv.true() returns indices of people matching this condition, i.e. people under 50
+    young = cv.true(sim.people.age < 50)  # cv.true() returns indices of people matching this condition, i.e. people under 50
     middle = cv.true((sim.people.age >= 50) * (sim.people.age < 75))  # Multiplication means "and" here
     old = cv.true(sim.people.age >= 75)
     inds = sim.people.uid  # Everyone in the population -- equivalent to np.arange(len(sim.people))
