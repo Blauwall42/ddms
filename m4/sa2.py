@@ -60,7 +60,7 @@ def main():
                 beta=beta,
                 rel_death_prob=rel_death_prob,
                 rel_symp_prob=rel_symp_prob,
-                rel_severe_prob=rel_severe_prob
+                rel_severe_prob=rel_severe_prob,
                 rand_seed=seed
             )
 
