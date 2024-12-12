@@ -44,7 +44,7 @@ def get_orientation_matrix(n_input: int, p: int, ranges: list[list], delta: floa
     return lower_bound_mat + scale_mat * B_star, changes
 
 
-def morris(pars: dict, n_inputs: int, ranges: list, rs: int, p: int = 4, n_reps=50):
+def morris(pars: dict, n_inputs: int, ranges: list, rs: int, p: int = 4, n_reps=100):
     np.random.seed(42)
     delta: float = p / (2 * (p - 1))
 
@@ -101,7 +101,7 @@ def morris(pars: dict, n_inputs: int, ranges: list, rs: int, p: int = 4, n_reps=
 def main():
     pars: dict = dict(
         start_day='2020-01-01',
-        end_day='2020-06-30',
+        end_day='2020-12-31',
         pop_type='random',
         pop_size=25_000
     )
@@ -114,7 +114,7 @@ def main():
         [4, 12],  # mild2rec
         [4, 12]  # asym2rec
     ]
-    ds = morris(pars, n_inputs, ranges, 5, n_reps=10)
+    ds = morris(pars, n_inputs, ranges, 10, n_reps=50)
 
     inputs: list = ['beta', 'rel_death_prob', 'rel_symp_prob', 'rel_severe_prob', 'mild2rec', 'asym2rec']
     result_str = 'mu\n'
