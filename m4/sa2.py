@@ -6,14 +6,14 @@ from SALib.analyze.morris import analyze
 def main():
     problem = {
         'num_vars': 6,
-        'names': ['beta', 'rel_death_prob', 'rel_symp_prob', 'mild2rec', 'asym2rec', 'contacts'],
+        'names': ['beta', 'rel_death_prob', 'rel_symp_prob', 'rel_severe_prob', 'mild2rec', 'asym2rec'],
         'bounds': [
             [0.008, 0.024],    # beta
             [0.5, 1.5],        # rel_death_prob
             [0.5, 1.5],        # rel_symp_prob
+            [0.5, 1.5],        # rel_severe_prob
             [4, 12],           # mild2rec
-            [4, 12],           # asym2rec
-            [10, 30],          # contacts
+            [4, 12]           # asym2rec
         ]
     }
 
@@ -49,24 +49,24 @@ def main():
 
     # create all simulations with Method of Morris parameter values
     for params in param_values:
-        beta, rel_death_prob, rel_symp_prob, mild2rec, asym2rec, contacts = params
+        beta, rel_death_prob, rel_symp_prob, rel_severe_prob, mild2rec, asym2rec = params
 
         for seed in range(n_reps):
             pars = dict(
                 start_day='2020-01-01',
                 end_day='2020-12-31',
                 pop_type='random',
-                pop_size=25_000,
+                pop_size=100_000,
                 beta=beta,
                 rel_death_prob=rel_death_prob,
                 rel_symp_prob=rel_symp_prob,
+                rel_severe_prob=rel_severe_prob
                 rand_seed=seed
             )
 
             sim = cv.Sim(pars)
             sim.pars['dur']['mild2rec']['par1'] = mild2rec
             sim.pars['dur']['asym2rec']['par1'] = asym2rec
-            sim.pars['contacts']['a'] = contacts
             sims.append(sim)
 
     msim = cv.MultiSim(sims)
