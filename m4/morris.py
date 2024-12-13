@@ -1,7 +1,10 @@
 import numpy as np
 import covasim as cv
-from statsmodels.graphics.tukeyplot import results
+import pandas as pd
 
+"""
+The implementation was guided by the section 4.2 and 4.3 of the book "Sensitivity Analysis in Practice" by Andrea Saltelli et al.
+"""
 
 def get_orientation_matrix(n_input: int, p: int, ranges: list[list], delta: float) -> tuple[np.array, list]:
     """
@@ -44,7 +47,7 @@ def get_orientation_matrix(n_input: int, p: int, ranges: list[list], delta: floa
     return lower_bound_mat + scale_mat * B_star, changes
 
 
-def morris(pars: dict, n_inputs: int, ranges: list, rs: int, p: int = 4, n_reps=100):
+def morris(pars: dict, n_inputs: int, ranges: list, rs: int, p: int = 4, n_reps=100) -> dict:
     np.random.seed(42)
     delta: float = p / (2 * (p - 1))
 
@@ -54,8 +57,6 @@ def morris(pars: dict, n_inputs: int, ranges: list, rs: int, p: int = 4, n_reps=
         orientation_mat, changes = get_orientation_matrix(n_inputs, p, ranges, delta)
         r_orientation_mat.append(orientation_mat)
         r_changes.append(changes)
-
-
 
     sims: list = []
 
@@ -76,7 +77,7 @@ def morris(pars: dict, n_inputs: int, ranges: list, rs: int, p: int = 4, n_reps=
 
     msim = cv.MultiSim(sims)
     msim.run()
-    results = []
+    results: list = []
 
     for i in range(int(len(sims)/n_reps)):
         start_idx = i * n_reps
@@ -85,7 +86,7 @@ def morris(pars: dict, n_inputs: int, ranges: list, rs: int, p: int = 4, n_reps=
         mean_deaths = np.mean([sim.summary['cum_deaths'] for sim in reps])
         results.append(mean_deaths)
 
-    ds = {'F': {1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
+    ds: dict = {'F': {1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
           'G': {1: [], 2: [], 3: [], 4: [], 5: [], 6: []}}
     for r, changes in enumerate(r_changes):
         for i, change in enumerate(changes):
@@ -114,23 +115,20 @@ def main():
         [4, 12],  # mild2rec
         [4, 12]  # asym2rec
     ]
-    ds = morris(pars, n_inputs, ranges, 10, n_reps=50)
+    ds = morris(pars, n_inputs, ranges, 10, n_reps=100)
 
     inputs: list = ['beta', 'rel_death_prob', 'rel_symp_prob', 'rel_severe_prob', 'mild2rec', 'asym2rec']
-    result_str = 'mu\n'
+    mu: dict = {}
+    mu_star: dict = {}
+    sigma: dict = {}
     for i in range(1, n_inputs+1):
-        result_str += f'{inputs[i-1]}: {np.mean(ds["F"][i])}\n'
-    result_str += '\nmu*\n'
-    for i in range(1, n_inputs+1):
-        result_str += f'{inputs[i-1]}: {np.mean(ds["G"][i])}\n'
-    result_str += '\nsimga\n'
-    for i in range(1, n_inputs+1):
-        result_str += f'{inputs[i-1]}: {np.std(ds["F"][i])}\n'
+        mu[inputs[i-1]] = np.mean(ds["F"][i])
+        mu_star[inputs[i-1]] = np.mean(ds["G"][i])
+        sigma[inputs[i-1]] = np.std(ds["F"][i])
+    result_dict: dict = {'mu': mu, 'mu_star': mu_star, 'sigma': sigma}
 
-    with open('results.txt', 'w') as f:
-        f.write(result_str)
-
-    print(result_str)
+    df = pd.DataFrame(result_dict)
+    df.to_csv('morris.csv')
 
 if __name__ == "__main__":
     main()
