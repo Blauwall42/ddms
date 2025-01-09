@@ -106,8 +106,8 @@ def objective(x, n_runs=10):
         fit = sim.compute_fit()
         fit.compute_gofs(normalize=False, use_squared=True, as_scalar='mean')
         mean_squared_errors.append(fit.gofs['cum_deaths']+ fit.gofs['cum_diagnoses'])
-    mean_squered_error = np.mean(mean_squared_errors)
-    return mean_squered_error
+    mean_squared_error = np.mean(mean_squared_errors)
+    return mean_squared_error
 
 
 def main() -> None:
