@@ -25,4 +25,16 @@ To recreate the results, you need to execute the  file `m4/main.py`.
 For further configuration take a look at the file `m4/morris.py`.
 
 ### Results
-The measure results are printed to the standard output and are also saved in `morris.csv`. Additionally, two plots are created. 
+The measure results are printed to the standard output and are also saved in `morris.csv`. Additionally, two plots are created.
+
+## Milestone 5
+- Python (3.11 was used)
+- [Covasim](https://docs.idmod.org/projects/covasim/en/latest/index.html#)
+- scipy
+- numpy
+
+### Run
+To recreate the results, you need to execute the  file `m5/main.py`.
+
+### Results
+The results are saved in `m5/images` as plots and detailed results are written to the standard output.
